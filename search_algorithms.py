@@ -43,7 +43,7 @@ def boyer_moore_search(text, pattern):
     def bad_char_table(pattern):
         table = {}
         m = len(pattern)
-        for i in range(m):  # Включаем последний символ
+        for i in range(m):  
             table[pattern[i]] = m - 1 - i
         return table
     
