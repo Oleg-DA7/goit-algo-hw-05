@@ -39,39 +39,28 @@ def kmp_search(main_string, pattern):
 
     return -1  # якщо підрядок не знайдено
 
-def build_shift_table(pattern):
-    # Створити таблицю зсувів для алгоритму Боєра-Мура."""
-    table = {}
-    length = len(pattern)
-    # Для кожного символу в підрядку встановлюємо зсув рівний довжині підрядка
-    for index, char in enumerate(pattern[:-1]):
-        table[char] = length - index - 1
-        # Якщо символу немає в таблиці, зсув буде дорівнювати довжині підрядка
-        table.setdefault(pattern[-1], length)
-    return table
-
 def boyer_moore_search(text, pattern):
-    # Створюємо таблицю зсувів для патерну (підрядка)
-    shift_table = build_shift_table(pattern)
-    i = 0 # Ініціалізуємо початковий індекс для основного тексту
-
-    # Проходимо по основному тексту, порівнюючи з підрядком
-    while i <= len(text) - len(pattern):
-        j = len(pattern) - 1 # Починаємо з кінця підрядка
-
-        # Порівнюємо символи від кінця підрядка до його початку
-        while j >= 0 and text[i + j] == pattern[j]:
-            j -= 1 # Зсуваємось до початку підрядка
-
-            # Якщо весь підрядок збігається, повертаємо його позицію в тексті
-            if j < 0:
-                return i # Підрядок знайдено
-
-    # Зсуваємо індекс i на основі таблиці зсувів
-    # Це дозволяє "перестрибувати" над неспівпадаючими частинами тексту
-    i += shift_table.get(text[i + len(pattern) - 1], len(pattern))
-
-    # Якщо підрядок не знайдено, повертаємо -1
+    def bad_char_table(pattern):
+        table = {}
+        m = len(pattern)
+        for i in range(m):  # Включаем последний символ
+            table[pattern[i]] = m - 1 - i
+        return table
+    
+    if not pattern or not text or len(pattern) > len(text):
+        return -1
+    
+    bad_char = bad_char_table(pattern)
+    m, n = len(pattern), len(text)
+    s = 0
+    
+    while s <= n - m:
+        j = m - 1
+        while j >= 0 and pattern[j] == text[s + j]:
+            j -= 1
+        if j < 0:
+            return s
+        s += bad_char.get(text[s + m - 1], m)
     return -1
 
 def polynomial_hash(s, base=256, modulus=101):
